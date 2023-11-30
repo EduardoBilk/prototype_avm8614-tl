@@ -5,9 +5,11 @@ let isHovering = false;
 let hoverStartTime;
 let animationStartTime;
 const animationDuration = 2000; // 2 seconds
+const IMAGES = ['cats_and_wine.png', 'south_christmas.png'];
+const randomImgIndex = Math.floor(Math.random() * IMAGES.length);
 
 function preload() {
-  img = loadImage('cats_and_wine.png'); // Load the image
+  img = loadImage(IMAGES[randomImgIndex]);
 }
 
 function setup() {

@@ -4,7 +4,7 @@ let targetSize;
 let isHovering = false;
 let hoverStartTime;
 let animationStartTime;
-const animationDuration = 2000; // 2 seconds
+const CONSTANTS = {}
 const IMAGES = ['cats_and_wine.png', 'south_christmas.png'];
 const randomImgIndex = Math.floor(Math.random() * IMAGES.length);
 
@@ -14,7 +14,12 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  squareSize = windowHeight * 0.2;
+
+  CONSTANTS.MAX_SQUARE_HEIGHT = windowHeight * 0.8;
+  CONSTANTS.MIN_SQUARE_HEIGHT = windowHeight * 0.2;
+  CONSTANTS.HOVER_TIME_THRESHOLD = 3000;
+  CONSTANTS.ANIMATION_DURATION = 2000; 
+  squareSize = CONSTANTS.MIN_SQUARE_HEIGHT;
   targetSize = squareSize;
 }
 
@@ -28,7 +33,7 @@ function draw() {
     if (!isHovering) {
       isHovering = true;
       hoverStartTime = millis();
-    } else if (millis() - hoverStartTime > 3000) { // 3 seconds
+    } else if (millis() - hoverStartTime > CONSTANTS.HOVER_TIME_THRESHOLD) { 
       targetSize = windowHeight * 0.8;
     }
   } else {
@@ -36,11 +41,11 @@ function draw() {
       isHovering = false;
       animationStartTime = millis();
     }
-    if (millis() - animationStartTime < animationDuration) {
-      let progress = (millis() - animationStartTime) / animationDuration;
-      targetSize = lerp(windowHeight * 0.8, windowHeight * 0.2, progress);
+    if (millis() - animationStartTime < CONSTANTS.ANIMATION_DURATION) {
+      let progress = (millis() - animationStartTime) / CONSTANTS.ANIMATION_DURATION;
+      targetSize = lerp(targetSize, CONSTANTS.MIN_SQUARE_HEIGHT, progress);
     } else {
-      targetSize = windowHeight * 0.2;
+      targetSize = CONSTANTS.MIN_SQUARE_HEIGHT;
     }
   }
 

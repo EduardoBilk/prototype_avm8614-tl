@@ -24,7 +24,7 @@ function setup() {
 }
 
 function draw() {
-  background('#FFD1B9'); // Nice orange pastel tone
+  background(249, 249, 249); // Nice orange pastel tone
   imageMode(CENTER);
 
   // Check for mouse hover

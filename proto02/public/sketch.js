@@ -4,6 +4,8 @@ let targetSize;
 let isHovering = false;
 let hoverStartTime;
 let animationStartTime;
+let others = {};
+let socket;
 const CONSTANTS = {}
 const IMAGES = ['cats_and_wine.png', 'south_christmas.png'];
 const randomImgIndex = Math.floor(Math.random() * IMAGES.length);
@@ -22,8 +24,15 @@ function setup() {
   CONSTANTS.SERVER_URL = 'http://192.168.2.241:3000'; 
   squareSize = CONSTANTS.MIN_SQUARE_HEIGHT;
   targetSize = squareSize;
+  socket = io.connect(CONSTANTS.SERVER_URL);
+  socket.on('update', (data) => {
+    others[data.id] = data;
+  });
+  socket.on('clientDisconnected', (clientId) => {
+    delete others[clientId];
   });
 }
+
 function draw() {
   background(249, 249, 249); // Nice orange pastel tone
   imageMode(CENTER);
@@ -49,7 +58,22 @@ function draw() {
       targetSize = CONSTANTS.MIN_SQUARE_HEIGHT;
     }
   }
+  sendData();
+
   squareSize = lerp(squareSize, targetSize, 0.1); // Smooth transition
   image(img, width/2, height/2, squareSize, squareSize);
+  for (let clientId in others) {
+      let pos = others[clientId].position;
+          drawCross(pos.x, pos.y);
 }
+
+function drawCross(x, y) {
+  strokeWeight(3);
+  line(x - 10, y, x + 10, y);
+  line(x, y - 10, x, y + 10);
+}
+
+
+function sendData() {
+  socket.emit('update', { id: socket.id, position: { x: mouseX, y: mouseY }, isHovering });
 }

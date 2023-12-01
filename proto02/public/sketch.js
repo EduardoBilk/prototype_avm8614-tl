@@ -1,4 +1,5 @@
 let img;
+let eye;
 let squareSize;
 let targetSize;
 let isHovering = false;
@@ -12,6 +13,7 @@ const randomImgIndex = Math.floor(Math.random() * IMAGES.length);
 
 function preload() {
   img = loadImage(IMAGES[randomImgIndex]);
+  eye = loadImage('noun-eye-4498360.svg');
 }
 
 function setup() {
@@ -63,8 +65,14 @@ function draw() {
   squareSize = lerp(squareSize, targetSize, 0.1); // Smooth transition
   image(img, width/2, height/2, squareSize, squareSize);
   for (let clientId in others) {
+      const isOtherHovering = others[clientId].isHovering;
       let pos = others[clientId].position;
+      if (isOtherHovering) {
+          drawEye(pos.x, pos.y);
+      }else {
           drawCross(pos.x, pos.y);
+      }
+  }
 }
 
 function drawCross(x, y) {
@@ -73,6 +81,9 @@ function drawCross(x, y) {
   line(x, y - 10, x, y + 10);
 }
 
+function drawEye(x, y) {
+  image(eye, x, y, 30, 30);
+}
 
 function sendData() {
   socket.emit('update', { id: socket.id, position: { x: mouseX, y: mouseY }, isHovering });

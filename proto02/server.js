@@ -4,6 +4,7 @@ const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
+app.use(express.static('public'));
 const io = socketIo(server);
 
 io.on('connection', (socket) => {

@@ -7,7 +7,11 @@ let hoverStartTime;
 let animationStartTime;
 let others = {};
 let socket;
-const CONSTANTS = {}
+const CONSTANTS = {
+    SERVER_URL:'http://192.168.2.241:3000',
+    HOVER_TIME_THRESHOLD: 3000,
+    ANIMATION_DURATION: 2000 
+}
 const IMAGES = ['cats_and_wine.png', 'south_christmas.png'];
 const randomImgIndex = Math.floor(Math.random() * IMAGES.length);
 
@@ -18,12 +22,8 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-
   CONSTANTS.MAX_SQUARE_HEIGHT = windowHeight * 0.8;
   CONSTANTS.MIN_SQUARE_HEIGHT = windowHeight * 0.2;
-  CONSTANTS.HOVER_TIME_THRESHOLD = 3000;
-  CONSTANTS.ANIMATION_DURATION = 2000; 
-  CONSTANTS.SERVER_URL = 'http://192.168.2.241:3000'; 
   squareSize = CONSTANTS.MIN_SQUARE_HEIGHT;
   targetSize = squareSize;
   socket = io.connect(CONSTANTS.SERVER_URL);

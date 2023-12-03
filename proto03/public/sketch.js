@@ -21,6 +21,7 @@ const randomImgIndex = Math.floor(Math.random() * IMAGES.length);
 function preload() {
   img = loadImage(IMAGES[randomImgIndex]);
   eye = loadImage('noun-eye-4498360.svg');
+  redEye = loadImage('noun-eye-red.svg');
 }
 
 function setup() {
@@ -72,21 +73,32 @@ function draw() {
       const isOtherHovering = others[clientId].isHovering;
       let pos = others[clientId].position;
       if (isOtherHovering) {
-          drawEye(pos.x, pos.y);
+          drawEye(others[clientId]);
       }else {
-          drawCross(pos.x, pos.y);
+          drawCross(others[clientId]);
       }
   }
 }
 
-function drawCross(x, y) {
+function drawCross(other) {
+  const {x, y} = other.position;
   strokeWeight(3);
+  if (other.isArtist) {
+      stroke('#cc241d');
+  } else {
+      stroke(0);
+  }
   line(x - 10, y, x + 10, y);
   line(x, y - 10, x, y + 10);
 }
 
-function drawEye(x, y) {
-  image(eye, x, y, 30, 30);
+function drawEye(other) {
+  const {x, y} = other.position;
+  if (other.isArtist) {
+    image(redEye, x, y, 30, 30);
+  }else {
+    image(eye, x, y, 30, 30);
+  }
 }
 
 function sendData() {

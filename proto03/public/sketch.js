@@ -6,8 +6,11 @@ let isHovering = false;
 let hoverStartTime;
 let animationStartTime;
 let others = {};
+let isArtist = false;
+let name = 'Annonymous'
 let socket;
 const CONSTANTS = {
+    MAX_ARTISTS_ALLOWED:1,
     SERVER_URL:'http://192.168.2.241:3000',
     HOVER_TIME_THRESHOLD: 3000,
     ANIMATION_DURATION: 2000 
@@ -33,6 +36,7 @@ function setup() {
   socket.on('clientDisconnected', (clientId) => {
     delete others[clientId];
   });
+  loadState();
 }
 
 function draw() {
@@ -86,5 +90,13 @@ function drawEye(x, y) {
 }
 
 function sendData() {
-  socket.emit('update', { id: socket.id, position: { x: mouseX, y: mouseY }, isHovering });
+  socket.emit('update', { id: socket.id, position: { x: mouseX, y: mouseY }, isHovering, isArtist });
 }
+
+function loadState() {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  isArtist = urlParams.has('art_')
+  name = urlParams.get('name');
+}
+

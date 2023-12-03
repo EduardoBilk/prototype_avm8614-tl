@@ -2,9 +2,11 @@ const os = require('os');
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+
 const networkInterfaces = os.networkInterfaces();
 const port = 3000;
-let ip;
+const ip = getIP();
+
 const app = express();
 const server = http.createServer(app);
 app.use(express.static('public'));
@@ -23,14 +25,16 @@ io.on('connection', (socket) => {
   });
 });
 
-for (const interface in networkInterfaces) {
-  networkInterfaces[interface].forEach((details) => {
-    if (details.family === 'IPv4' && !details.internal) {
-      ip = `${details.address}`;
-    }
-  });
-}
 server.listen(port, () => {
   console.log(`Listening on http://${ip}:${port}`);
 });
 
+function getIP () {
+    for (const interface in networkInterfaces) {
+        networkInterfaces[interface].forEach((details) => {
+            if (details.family === 'IPv4' && !details.internal) {
+                return `${details.address}`;
+            }
+        });
+    }
+}

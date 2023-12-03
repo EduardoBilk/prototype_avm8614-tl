@@ -5,7 +5,6 @@ const socketIo = require('socket.io');
 
 const networkInterfaces = os.networkInterfaces();
 const port = 3000;
-const ip = getIP();
 
 const app = express();
 const server = http.createServer(app);
@@ -26,15 +25,17 @@ io.on('connection', (socket) => {
 });
 
 server.listen(port, () => {
-  console.log(`Listening on http://${ip}:${port}`);
+  console.log(`Listening on http://${getIP()}:${port}`);
 });
 
 function getIP () {
+    let ip = 0
     for (const interface in networkInterfaces) {
         networkInterfaces[interface].forEach((details) => {
             if (details.family === 'IPv4' && !details.internal) {
-                return `${details.address}`;
+                ip = details.address;
             }
         });
     }
+    return ip;
 }

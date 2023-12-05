@@ -15,13 +15,13 @@ const CONSTANTS = {
     HOVER_TIME_THRESHOLD: 3000,
     ANIMATION_DURATION: 2000 
 }
-const IMAGES = ['proto03/cats_and_wine.png', 'proto03/south_christmas.png'];
+const IMAGES = ['cats_and_wine.png', 'south_christmas.png'];
 const randomImgIndex = Math.floor(Math.random() * IMAGES.length);
 
 function preload() {
   img = loadImage(IMAGES[randomImgIndex]);
-  eye = loadImage('proto03/noun-eye-4498360.svg');
-  redEye = loadImage('proto03/noun-eye-red.svg');
+  eye = loadImage('noun-eye-4498360.svg');
+  redEye = loadImage('noun-eye-red.svg');
 }
 
 function setup() {

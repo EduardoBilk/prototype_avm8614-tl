@@ -9,7 +9,11 @@ const port = 3000;
 const app = express();
 const server = http.createServer(app);
 app.use(express.static('public'));
-const io = socketIo(server);
+const io = socketIo(server, {
+    cors: {
+    origin: '*',
+  }
+});
 
 io.on('connection', (socket) => {
   console.log('New client connected');

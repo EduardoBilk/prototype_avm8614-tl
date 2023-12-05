@@ -11,7 +11,7 @@ let name = 'Annonymous'
 let socket;
 const CONSTANTS = {
     MAX_ARTISTS_ALLOWED:1,
-    SERVER_URL:'https://prototype-avm8614-tl.vercel.app/:3000',
+    SERVER_URL:'https://prototype-avm8614-tl-ebilk.vercel.app:3000',
     HOVER_TIME_THRESHOLD: 3000,
     ANIMATION_DURATION: 2000 
 }

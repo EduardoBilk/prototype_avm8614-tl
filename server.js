@@ -16,18 +16,22 @@ const io = socketIo(server, {
 });
 
 io.on('connection', (socket) => {
+  let artistId = null;
   console.log('New client connected');
 
   socket.on('update', (data) => {
+    if (data.isArtist) {
+      console.log('Artist connected', socket.id);
+      artistId = socket.id;
+    }
     socket.broadcast.emit('update', data);
   });
 
-  socket.on("message", ({ content, to }) => {
-     socket.to(to).emit("message", {
-       content,
-       from: socket.id,
-     });
-   });
+  socket.on('sendMessage', (message) => {
+    console.log('Message:', message);
+    console.log('Artist:', artistId);
+    socket.to(artistId).emit('receiveMessage', message);
+  });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');

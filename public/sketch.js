@@ -38,6 +38,10 @@ function setup() {
   socket = io.connect(CONSTANTS.SERVER_URL);
   socket.on('update', (data) => {
     others[data.id] = data;
+    console.log(data.isArtist);
+  });
+  socket.on('receiveMessage', (message) => {
+    console.log('Message:', message);
   });
   socket.on('clientDisconnected', (clientId) => {
     delete others[clientId];
@@ -71,17 +75,19 @@ function draw() {
     }
   }
   sendData();
-
   squareSize = lerp(squareSize, targetSize, 0.1); // Smooth transition
   image(img, width/2, height/2, squareSize, squareSize);
+  let isAristPresent = false
   for (let clientId in others) {
-      const isOtherHovering = others[clientId].isHovering;
-      let pos = others[clientId].position;
-      if (isOtherHovering) {
-          drawEye(others[clientId]);
-      }else {
-          drawCross(others[clientId]);
-      }
+    const isOtherHovering = others[clientId].isHovering;
+    isAristPresent = isAristPresent || others[clientId].isArtist;
+    let pos = others[clientId].position;
+    if (isOtherHovering) {
+      drawEye(others[clientId]);
+    }else {
+      drawCross(others[clientId]);
+    }
+   setMessageFormDisplay(isAristPresent);
   }
 }
 
@@ -117,3 +123,16 @@ function loadState() {
   name = urlParams.get('name');
 }
 
+function getArtist() {
+  return Object.keys(others).find(key => others[key].isArtist);
+}
+
+function sendMessage() {
+  const message = document.getElementById('messageInput').value;
+  socket.emit('sendMessage', { id: socket.id, message });
+} 
+
+function setMessageFormDisplay(visible) {
+  const messageForm = document.getElementById('messageForm');
+  messageForm.style.display = visible ? 'block' : 'none';
+}

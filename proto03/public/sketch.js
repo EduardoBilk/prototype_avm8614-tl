@@ -9,9 +9,14 @@ let others = {};
 let isArtist = false;
 let name = 'Annonymous'
 let socket;
+// TODO: Add message events
+// TODO: Add artist events
+// TODO: Track artist id
+// TODO: add styles
+// handle messages ttl
 const CONSTANTS = {
     MAX_ARTISTS_ALLOWED:1,
-    SERVER_URL:'https://prototype-avm8614-tl-ebilk.vercel.app:3000',
+    SERVER_URL:'http://192.168.2.241:3000',
     HOVER_TIME_THRESHOLD: 3000,
     ANIMATION_DURATION: 2000 
 }
@@ -41,7 +46,7 @@ function setup() {
 }
 
 function draw() {
-  background(249, 249, 249); // Nice orange pastel tone
+  background(249, 249, 249);
   imageMode(CENTER);
 
   // Check for mouse hover

@@ -22,6 +22,13 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('update', data);
   });
 
+  socket.on("message", ({ content, to }) => {
+     socket.to(to).emit("message", {
+       content,
+       from: socket.id,
+     });
+   });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected');
     io.emit('clientDisconnected', socket.id);

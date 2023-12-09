@@ -7,13 +7,10 @@ let hoverStartTime;
 let animationStartTime;
 let others = {};
 let isArtist = false;
-let name = 'Annonymous'
+let name;
 let socket;
-// TODO: Add message events
-// TODO: Add artist events
-// TODO: Track artist id
 // TODO: add styles
-// handle messages ttl
+const mesagesList = [];
 const CONSTANTS = {
     MAX_ARTISTS_ALLOWED:1,
     SERVER_URL:'http://192.168.2.241:3000',
@@ -36,16 +33,20 @@ function setup() {
   squareSize = CONSTANTS.MIN_SQUARE_HEIGHT;
   targetSize = squareSize;
   socket = io.connect(CONSTANTS.SERVER_URL);
+
   socket.on('update', (data) => {
     others[data.id] = data;
-    console.log(data.isArtist);
   });
-  socket.on('receiveMessage', (message) => {
-    console.log('Message:', message);
+
+  socket.on('receiveMessage', (data) => {
+   addMessage(data);
   });
+
   socket.on('clientDisconnected', (clientId) => {
     delete others[clientId];
+    removeResponseForm(clientId);
   });
+
   loadState();
 }
 
@@ -53,7 +54,6 @@ function draw() {
   background(249, 249, 249);
   imageMode(CENTER);
 
-  // Check for mouse hover
   if (mouseX > width/2 - squareSize/2 && mouseX < width/2 + squareSize/2 &&
       mouseY > height/2 - squareSize/2 && mouseY < height/2 + squareSize/2) {
     if (!isHovering) {
@@ -77,17 +77,18 @@ function draw() {
   sendData();
   squareSize = lerp(squareSize, targetSize, 0.1); // Smooth transition
   image(img, width/2, height/2, squareSize, squareSize);
-  let isAristPresent = false
   for (let clientId in others) {
     const isOtherHovering = others[clientId].isHovering;
-    isAristPresent = isAristPresent || others[clientId].isArtist;
     let pos = others[clientId].position;
     if (isOtherHovering) {
       drawEye(others[clientId]);
     }else {
       drawCross(others[clientId]);
     }
-   setMessageFormDisplay(isAristPresent);
+    if (others[clientId].isArtist) {
+      createResponseForm(clientId);
+      updateMessagesDisplay(clientId);
+    }
   }
 }
 
@@ -113,26 +114,103 @@ function drawEye(other) {
 }
 
 function sendData() {
-  socket.emit('update', { id: socket.id, position: { x: mouseX, y: mouseY }, isHovering, isArtist });
+  socket.emit('update', { id: socket.id, position: { x: mouseX, y: mouseY }, name, isHovering, isArtist });
 }
 
 function loadState() {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   isArtist = urlParams.has('art_')
-  name = urlParams.get('name');
+  if (isArtist) {
+    name = urlParams.get('name') ||'Artist';
+  } else {
+    name = urlParams.get('name') || 'Annonymous';
+  }
 }
 
-function getArtist() {
-  return Object.keys(others).find(key => others[key].isArtist);
-}
-
-function sendMessage() {
-  const message = document.getElementById('messageInput').value;
-  socket.emit('sendMessage', { id: socket.id, message });
+function sendMessage(id) {
+  const message= document.getElementById(`messageInput_${id}`).value;
+  document.getElementById(`messageInput_${id}`).value = '';
+  socket.emit('sendMessage', { id: socket.id, to: id, name, message });
+  addMessage({ id: socket.id, to: id, name, message });
 } 
 
-function setMessageFormDisplay(visible) {
-  const messageForm = document.getElementById('messageForm');
-  messageForm.style.display = visible ? 'block' : 'none';
+function addMessage(data) {
+  mesagesList.push(data);
+  if (mesagesList.length > 6) {
+    mesagesList.shift();
+  }
+  if (data.id === socket.id) {
+    createResponseForm(data.to);
+    updateMessagesDisplay(data.to);
+  } else {
+    createResponseForm(data.id);
+    updateMessagesDisplay(data.id);
+  }
+}
+
+function updateMessagesDisplay(id) {
+  if (!document.getElementById(`messageForm_${id}`)) {
+    return;
+  }
+  const messagesContainer = document.getElementById(`messages_${id}`);
+  messagesContainer.innerHTML = '';
+  const idMesagesList = mesagesList.filter(
+    (message) => message.id === id || message.to === id
+  );
+  idMesagesList.forEach((message) => {
+    const messageElement = document.createElement('div');
+    messageElement.innerHTML = `<b>${message.name}</b>: ${message.message}`;
+    messagesContainer.appendChild(messageElement);
+  });
+}
+
+function createResponseForm(id) {
+  const formContainer = document.getElementById('formWrapper');
+
+  if (document.getElementById(`messageForm_${id}`)) {
+    return;
+  }
+  if (Object.values(others).filter((other) => other.isArtist).length > CONSTANTS.MAX_ARTISTS_ALLOWED || id === socket.id) {
+    return;
+  }
+  if (socket.id === id) {
+    return;
+  }
+  const responseForm = document.createElement('form');
+  responseForm.id = `messageForm_${id}`;
+  responseForm.innerHTML = `
+  <div>
+    <h4>${getResponseFormHeader(id)}</h4>
+    <div id="messages_${id}"></div>
+    <input type="text" id="messageInput_${id}" placeholder="Type your message here">
+  </div>
+  `;
+  const sendMessageButton = document.createElement('button');
+  sendMessageButton.innerText = 'Send Message';
+  sendMessageButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    sendMessage(id);
+  });
+
+  responseForm.appendChild(sendMessageButton);
+  formContainer.appendChild(responseForm);
+}
+  
+function removeResponseForm(id) {
+  const formContainer = document.getElementById('formWrapper');
+  const responseForm = document.getElementById(`messageForm_${id}`);
+  if (!responseForm) {
+    return;
+  }
+  formContainer.removeChild(responseForm);
+}
+
+function getResponseFormHeader(id) {
+  const data = others[id];
+  if (isArtist) {
+    return `Messages from a visitor: ${data.name}`;
+  } else {
+    return 'Artist is present. You can message them!';
+  }
 }

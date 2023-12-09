@@ -12,14 +12,27 @@
             padding: 0;
             overflow: hidden;
         }
+
+        #formWrapper {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          background-color: transparent; 
+          z-index: 1000;
+          overflow-x: auto;
+          display: flex;
+        }
+
+        .responseForm {
+          flex: 0 0 auto;
+          margin: 10px;
+          /* Additional styling for forms */
+        }
     </style>
 </head>
 <body>
-  <div id="messageForm" style="display: none;">
-    <p>Artist is present. You can message them!</p>
-    <input type="text" id="messageInput" placeholder="Type your message here">
-    <button onclick="sendMessage()">Send Message</button>
-  </div>
+  <div id="formWrapper"></div>
 </body>
 </html>
 

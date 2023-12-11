@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>proto03</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" integrity="sha384-mZLF4UVrpi/QTWPA7BjNPEnkIfRFn4ZEO3Qt/HFklTJBj/gBOV8G3HcKn4NfQblz" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
     <script src="sketch.js"></script>
@@ -23,11 +24,48 @@
           overflow-x: auto;
           display: flex;
         }
-
         .responseForm {
           flex: 0 0 auto;
-          margin: 10px;
-          /* Additional styling for forms */
+          max-width: 15rem;
+          word-wrap: break-word;
+          margin: 0 1.5rem;
+          padding: 0.5rem;
+          background-color: #fff;
+          font-family: 'Helvetica Neue', Roboto, sans-serif;
+        }
+        .inputWrapper {
+          display: flex;
+          align-items: center; /* Align items vertically in the center */
+        }
+
+        .messageInput {
+          flex-grow: 1; /* Input takes up the remaining space */
+          border: none;
+          border-bottom: 2px solid black; /* Single bottom border */
+          padding: 0.5em; /* Padding inside the input */
+          font-family: 'Helvetica Neue', Roboto, sans-serif; /* Font style */
+          margin-right: 0.5em; /* Space between input and button */
+        }
+        .messageInput:focus {
+          background-color: #1111;
+          outline: none;
+        }
+
+        .sendMessageButton {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: transparent;
+          border: none;
+          padding: 0.5em;
+          cursor: pointer;
+          margin: 0;
+          width: 2.5em;
+          height: 2.5em;
+          background-image: url('noun-enter.svg');
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
         }
     </style>
 </head>

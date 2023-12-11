@@ -9,25 +9,27 @@ let others = {};
 let isArtist = false;
 let name;
 let socket;
+let aspectRatio;
 // TODO: add styles
 const mesagesList = [];
 const CONSTANTS = {
     MAX_ARTISTS_ALLOWED:1,
     SERVER_URL:'http://192.168.2.241:3000',
-    HOVER_TIME_THRESHOLD: 3000,
+    HOVER_TIME_THRESHOLD: 2500,
     ANIMATION_DURATION: 2000 
 }
-const IMAGES = ['cats_and_wine.png', 'south_christmas.png'];
+const IMAGES = ['splitting_mata_clark.jpg'];
 const randomImgIndex = Math.floor(Math.random() * IMAGES.length);
 
 function preload() {
   img = loadImage(IMAGES[randomImgIndex]);
   eye = loadImage('noun-eye.svg');
-  redEye = loadImage('noun-eye-red.svg');
+  artistEye = loadImage('noun-eye-artist.svg');
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  aspectRatio = img.width / img.height;
   CONSTANTS.MAX_SQUARE_HEIGHT = windowHeight * 0.8;
   CONSTANTS.MIN_SQUARE_HEIGHT = windowHeight * 0.2;
   squareSize = CONSTANTS.MIN_SQUARE_HEIGHT;
@@ -76,7 +78,15 @@ function draw() {
   }
   sendData();
   squareSize = lerp(squareSize, targetSize, 0.1); // Smooth transition
-  image(img, width/2, height/2, squareSize, squareSize);
+  let displayWidth, displayHeight;
+  if (aspectRatio > 1) {
+    displayWidth = squareSize;
+    displayHeight = squareSize / aspectRatio;
+  } else {
+    displayWidth = squareSize * aspectRatio;
+    displayHeight = squareSize;
+  }
+  image(img, width/2, height/2, displayWidth, displayHeight);
   for (let clientId in others) {
     const isOtherHovering = others[clientId].isHovering;
     let pos = others[clientId].position;
@@ -96,7 +106,7 @@ function drawCross(other) {
   const {x, y} = other.position;
   strokeWeight(3);
   if (other.isArtist) {
-      stroke('#cc241d');
+      stroke('#002fa6');
   } else {
       stroke(0);
   }
@@ -107,9 +117,9 @@ function drawCross(other) {
 function drawEye(other) {
   const {x, y} = other.position;
   if (other.isArtist) {
-    image(redEye, x, y, 30, 30);
+    image(artistEye, x, y, 35, 35);
   }else {
-    image(eye, x, y, 30, 30);
+    image(eye, x, y, 35, 35);
   }
 }
 
@@ -179,22 +189,49 @@ function createResponseForm(id) {
   }
   const responseForm = document.createElement('form');
   responseForm.id = `messageForm_${id}`;
+  responseForm.className = 'responseForm';
   responseForm.innerHTML = `
   <div>
-    <h4>${getResponseFormHeader(id)}</h4>
+    <p>${getResponseFormHeader(id)}</p>
     <div id="messages_${id}"></div>
-    <input type="text" id="messageInput_${id}" placeholder="Type your message here">
   </div>
   `;
+  const inputWrapper = document.createElement('div');
+  inputWrapper.className = 'inputWrapper';
+
+  const messageInput = createMessageInput(id);
+  const sendMessageButton = createSendMessageButton();
+
+  inputWrapper.appendChild(messageInput);
+  inputWrapper.appendChild(sendMessageButton);
+
+  responseForm.appendChild(inputWrapper);
+  formContainer.appendChild(responseForm);
+}
+
+function createMessageInput(id) {
+  const messageInput = document.createElement('input');
+  messageInput.id = `messageInput_${id}`;
+  messageInput.className = 'messageInput';
+  messageInput.placeholder = 'Message';
+  messageInput.addEventListener('keyup', function(e) {
+    e.preventDefault();
+    if (e.keyCode === 13) {
+      sendMessage(id);
+    }
+  });
+  return messageInput;
+}
+
+function createSendMessageButton() {
   const sendMessageButton = document.createElement('button');
-  sendMessageButton.innerText = 'Send Message';
+  sendMessageButton.id = 'sendMessageButton';
+  sendMessageButton.className = 'sendMessageButton';
   sendMessageButton.addEventListener('click', function(e) {
     e.preventDefault();
     sendMessage(id);
   });
-
-  responseForm.appendChild(sendMessageButton);
-  formContainer.appendChild(responseForm);
+  return sendMessageButton;
 }
   
 function removeResponseForm(id) {
@@ -209,8 +246,8 @@ function removeResponseForm(id) {
 function getResponseFormHeader(id) {
   const data = others[id];
   if (isArtist) {
-    return `Messages from a visitor: ${data.name}`;
+    return `${data.name} t\'écrie une message:`;
   } else {
-    return 'Artist is present. You can message them!';
+    return 'L\'artiste est entré dans la salle, dites bonjour.';
   }
 }

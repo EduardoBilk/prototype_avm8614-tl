@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sendMessage', (data) => {
-    socket.to(data.to).emit('receiveMessage', data);
+    socket.to(data.to || artistId).emit('receiveMessage', data);
   });
 
   socket.on('disconnect', () => {

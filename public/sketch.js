@@ -37,6 +37,9 @@ function setup() {
   socket = io.connect(CONSTANTS.SERVER_URL);
 
   socket.on('update', (data) => {
+    if (!data.id) {
+      return;
+    }
     others[data.id] = data;
     if (data.isArtist) {
       createResponseForm(data.id);
@@ -126,7 +129,15 @@ function drawEye(other) {
 }
 
 function sendData() {
-  socket.emit('update', { id: socket.id, position: { x: mouseX, y: mouseY }, name, isHovering, isArtist });
+  socket.emit('update', { 
+    id: socket.id,
+    position: {
+      x: mouseX, 
+      y: mouseY 
+    }, 
+    name, 
+    isHovering, 
+    isArtist });
 }
 
 function loadState() {
@@ -186,7 +197,8 @@ function createResponseForm(id) {
   if (document.getElementById(`messageForm_${id}`)) {
     return;
   }
-  if (Object.values(others).filter((other) => other.isArtist).length > CONSTANTS.MAX_ARTISTS_ALLOWED || id === socket.id) {
+  if (Object.values(others).filter((other) => other.isArtist).length > CONSTANTS.MAX_ARTISTS_ALLOWED ||
+    id === socket.id) {
     return;
   }
   if (socket.id === id) {
@@ -205,7 +217,7 @@ function createResponseForm(id) {
   inputWrapper.className = 'inputWrapper';
 
   const messageInput = createMessageInput(id);
-  const sendMessageButton = createSendMessageButton();
+  const sendMessageButton = createSendMessageButton(id);
 
   inputWrapper.appendChild(messageInput);
   inputWrapper.appendChild(sendMessageButton);
@@ -228,7 +240,7 @@ function createMessageInput(id) {
   return messageInput;
 }
 
-function createSendMessageButton() {
+function createSendMessageButton(id) {
   const sendMessageButton = document.createElement('button');
   sendMessageButton.id = 'sendMessageButton';
   sendMessageButton.className = 'sendMessageButton';

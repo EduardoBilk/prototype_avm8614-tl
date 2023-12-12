@@ -10,7 +10,7 @@ let isArtist = false;
 let name;
 let socket;
 let aspectRatio;
-// TODO: add styles
+
 const mesagesList = [];
 const CONSTANTS = {
     MAX_ARTISTS_ALLOWED:1,
@@ -38,6 +38,9 @@ function setup() {
 
   socket.on('update', (data) => {
     others[data.id] = data;
+    if (data.isArtist) {
+      createResponseForm(data.id);
+    }
   });
 
   socket.on('receiveMessage', (data) => {
@@ -96,7 +99,6 @@ function draw() {
       drawCross(others[clientId]);
     }
     if (others[clientId].isArtist) {
-      createResponseForm(clientId);
       updateMessagesDisplay(clientId);
     }
   }

@@ -176,6 +176,9 @@ function updateMessagesDisplay(id) {
 }
 
 function createResponseForm(id) {
+  if (!id) {
+    return;
+  }
   const formContainer = document.getElementById('formWrapper');
 
   if (document.getElementById(`messageForm_${id}`)) {

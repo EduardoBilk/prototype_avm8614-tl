@@ -153,6 +153,9 @@ function loadState() {
 
 function sendMessage(id) {
   const message= document.getElementById(`messageInput_${id}`).value;
+  if (!message) {
+    return;
+  }
   document.getElementById(`messageInput_${id}`).value = '';
   socket.emit('sendMessage', { id: socket.id, to: id, name, message });
   addMessage({ id: socket.id, to: id, name, message });
